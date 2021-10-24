@@ -134,7 +134,7 @@
   function update(selectTemp){
     
       //Read the data
-      d3.csv("CityX_temp_monthly_Cleaned.csv", function(data) {
+      d3.csv("https://raw.githubusercontent.com/ziyingliow2018/ziyingliow2018.github.io/main/CityX_temp_monthly_Cleaned.csv", function(data) {
         var mousemove = function(d) {
           tooltip
             .html("Date: "+ getCurrentMonthName(d.month) + " " + d.year + " ; " +"Maximum Temperature: " + d[selectTemp] + " degrees")
