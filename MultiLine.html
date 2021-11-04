@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+    <title>D3 - Graph</title>
+
+     <!-- Redirect to  main page -->
+
+ <h3 style = "position:relative;left: 165px; top:40px">
+  <u>Agoraphobia by month (Multi Line)</u>
+</h3>
+
+<button type="button" class="btn btn-dark back" style = "position:relative;left: 0px; top:0px"> 
+  <a href="./main_page.html">
+          Back
+  </a>
+</button>
+    
+</body>
+</html>
+
+<meta charset="utf-8">
+
+<body>
+
+<!-- load the d3.js library -->    	
+<script src="https://d3js.org/d3.v6.min.js"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.7.1/d3-tip.min.js'></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+<!-- Create a div where the graph will take place -->
+<div id="my_dataviz"></div>
+<script>
+
+// set the dimensions and margins of the graph
+var margin = {top: 20, right: 20, bottom: 30, left: 50},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+    // tooltip = { width: 100, height: 100, x: 10, y: -30 };
+
+// parse the date / time
+var parseTime = d3.timeParse("%Y-%m");
+
+// set the ranges
+var x = d3.scaleTime().range([0, width]);
+var y = d3.scaleLinear().range([height, 0]);
+
+// define the 1st line
+var valueline = d3.line()
+    .x(function(d) { return x(d.date); })
+    .y(function(d) { return y(d.avoid_going_to_public_places); });
+
+// define the 2nd line
+var valueline2 = d3.line()
+    .x(function(d) { return x(d.date); })
+    .y(function(d) { return y(d.avoid_going_to_work); });
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+
+// Get the data
+d3.csv("https://raw.githubusercontent.com/ziyingliow2018/ziyingliow2018.github.io/main/Agoraphobia_LineChart.csv").then(function(data) {
+
+  // format the data
+  data.forEach(function(d) {
+      d.date = parseTime(d.date);
+      d.avoid_going_to_public_places = +d.avoid_going_to_public_places;
+      d.avoid_going_to_work = +d.avoid_going_to_work;
+  });
+
+  // Scale the range of the data
+  x.domain(d3.extent(data, function(d) { return d.date; }));
+  y.domain([0, d3.max(data, function(d) {
+	  return Math.max(d.avoid_going_to_public_places, d.avoid_going_to_work); })]);
+
+
+  // Add the valueline path.
+  svg.append("path")
+      .data([data])
+      .attr("class", "line")
+      .attr("d", valueline)
+  
+  svg
+    .append("g")
+    .selectAll("dot")
+    .data(data)
+    .enter()
+    .append("circle")
+      .attr("cx", function(d) { return x(d.date) } )
+      .attr("cy", function(d) { return y(d.avoid_going_to_public_places) } )
+      .attr("r", 5)
+      .attr("fill", "steelblue")
+    
+  // Add the valueline2 path.
+  svg.append("path")
+      .data([data])
+      .attr("class", "line")
+      .style("stroke", "red")
+      .attr("d", valueline2)
+  
+  svg
+    .append("g")
+    .selectAll("dot")
+    .data(data)
+    .enter()
+    .append("circle")
+      .attr("cx", function(d) { return x(d.date) } )
+      .attr("cy", function(d) { return y(d.avoid_going_to_work) } )
+      .attr("r", 5)
+      .attr("fill", "red")
+
+  // Add the X Axis
+  svg.append("g")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(x));
+
+  // Add the Y Axis
+  svg.append("g")
+      .call(d3.axisLeft(y));
+});
+
+</script>
+
+<!-- Legend Title-->
+<h2 class = "title">
+  <u>Legend</u>
+</h2>
+
+<!-- First legend -->
+<div class = "legend1">
+  <p class = "text1">
+    <strong>Avoid going to public places</strong>
+  </p>
+</div>
+
+<!-- Second legend -->
+<div class = "legend2">
+  <p class = "text2">
+    <strong>Avoid going to work</strong>
+  </p>
+</div>
+
+<!-- Styling -->
+<style>
+
+  .title{
+    position: relative;
+    left: 1050px;
+    bottom: 450px;
+  }
+  
+  .legend1{
+    height: 25px;
+    width: 25px;
+    background-color: steelblue;
+    border-radius: 5px;
+    position: relative;
+    left:1050px;
+    bottom: 440px;
+  }
+  
+  .text1{
+    position: relative;
+    left:40px;
+    width: 100px;
+  }
+  
+  .legend2{
+    height: 25px;
+    width: 25px;
+    background-color: red;
+    border-radius: 5px;
+    position: relative;
+    left:1050px;
+    bottom:390px;
+  }
+  
+  .text2{
+    position: relative;
+    left:40px;
+    width: 100px;
+  }
+  
+  .line {
+    fill: none;
+    stroke: steelblue;
+    stroke-width: 2px;
+  }
+  
+  a{
+            text-decoration: none;
+        }
+
+        a:link, a:visited,a:hover, a:active{
+            color:white;
+        }
+        button.back{
+            position:relative;
+            left: 0px;
+            top: 0px;
+            
+        }
+      
+  </style>
+
+</body>
